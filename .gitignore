@@ -1,1 +1,3 @@
 bank_churn_prediction
+mlruns
+*__pycache__*
