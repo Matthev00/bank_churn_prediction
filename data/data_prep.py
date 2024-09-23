@@ -33,7 +33,9 @@ def create_dataloaders(
 
 
 def main():
-    X_train, X_test, y_train, y_test = create_dataloaders(data_path="Churn_Modelling.csv")
+    X_train, X_test, y_train, y_test = create_dataloaders(
+        data_path="Churn_Modelling.csv"
+    )
     print(X_train.head())
     print(y_train.head())
 
