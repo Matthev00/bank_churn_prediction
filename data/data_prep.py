@@ -39,7 +39,12 @@ def get_some_X(data_path: str = "Churn_Modelling.csv") -> pd.DataFrame:
     return X
 
 
-def format_app_input_features(user_input_features):
+def get_example_pd_input():
+    X = get_some_X()
+    return X.iloc[:5]
+
+
+def format_app_input_features(user_input_features) -> pd.DataFrame:
     X = pd.DataFrame(user_input_features, index=[0])
 
     yes_no_columns = ["HasCrCard", "IsActiveMember"]
@@ -50,7 +55,7 @@ def format_app_input_features(user_input_features):
     X = pd.concat([X, get_some_X()], axis=0)
     X_encoded = pd.get_dummies(X, columns=X.select_dtypes(include="object").columns)
 
-    return X_encoded.iloc[0]
+    return X_encoded.iloc[0].to_frame().T
 
 
 def main():
