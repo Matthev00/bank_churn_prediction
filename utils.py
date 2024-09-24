@@ -10,7 +10,6 @@ from sklearn.metrics import (
 )
 from sklearn.metrics import ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
-import pandas as pd
 
 
 def str2bool(v):
@@ -43,7 +42,6 @@ def mlflow_logging_decorator(func):
     def wrapper(*args, **kwargs):
         run_name = kwargs.get("run_name", "default_run")
         logging_enabled = kwargs.get("logging_enabled", True)
-        print(logging_enabled)
 
         if not logging_enabled:
             return func(*args, **kwargs)
