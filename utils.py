@@ -10,6 +10,7 @@ from sklearn.metrics import (
 )
 from sklearn.metrics import ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def str2bool(v):
@@ -75,3 +76,8 @@ def mlflow_logging_decorator(func):
         return y_test, y_pred
 
     return wrapper
+
+
+def load_model(model_uri: str = "models:/Churn_model/1"):
+    model = mlflow.pyfunc.load_model(model_uri)
+    return model
