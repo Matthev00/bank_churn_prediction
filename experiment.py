@@ -15,9 +15,7 @@ import itertools
 
 def main():
     data_path = "Churn_Modelling.csv"
-    X_train, X_test, y_train, y_test = create_dataloaders(
-        data_path=data_path
-    )
+    X_train, X_test, y_train, y_test = create_dataloaders(data_path=data_path)
 
     params = {
         "max_depth": [3, 4, 5],
@@ -34,7 +32,6 @@ def main():
     for combo in combinations:
         model_name = "_".join([f"{key}_{value}" for key, value in combo.items()])
         with mlflow.start_run(run_name=model_name):
-
             clf = xgb.XGBClassifier(
                 objective="binary:logistic",
                 seed=42,
@@ -73,9 +70,11 @@ def main():
             )
             fig, ax = plt.subplots()
             disp.plot(ax=ax)
-            cf_name = "cf" + "_".join(
-                [f"{key}_{value}" for key, value in combo.items()]
-            ) + ".png"
+            cf_name = (
+                "cf"
+                + "_".join([f"{key}_{value}" for key, value in combo.items()])
+                + ".png"
+            )
             mlflow.log_figure(fig, cf_name)
 
 
