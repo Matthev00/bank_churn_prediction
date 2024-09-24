@@ -35,6 +35,8 @@ def main(logging_enabled: bool = True, run_name: str = "default Model"):
 
     y_pred = clf.predict(X_test)
 
+    clf.save_model("model.json")
+
     return y_test, y_pred
 
 

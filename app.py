@@ -3,6 +3,7 @@ from data.data_prep import format_app_input_features, get_example_pd_input
 from utils import load_model
 import pandas as pd
 import numpy as np
+import xgboost
 
 
 def user_input_features():
@@ -34,11 +35,6 @@ def user_input_features():
     return input_dict
 
 
-def xyz(df):
-    exited = [1] * df.shape[0]
-    return pd.DataFrame({"Exited": exited})
-
-
 def color_negative_red(val):
     color = 'red' if val == 0 else 'green'
     return f'color: {color}'
@@ -62,19 +58,19 @@ def main():
     uploaded_file = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"])
     if uploaded_file is not None:
         X = pd.read_csv(uploaded_file)
+        
     else:
         input_dict = user_input_features()
         X = format_app_input_features(input_dict)
 
-    # clf = load_model()
+    clf = xgboost.XGBClassifier()
+    clf.load_model("model.json")
 
-    # prediction = clf.predict(X)
-    # print(prediction)
-
-    pred = xyz(X)
+    preds = clf.predict(X)
+    preds_df = pd.DataFrame(preds, columns=['Exited'])
 
     st.subheader("Prediction")
-    colored_pred = pred.style.applymap(color_negative_red, subset=['Exited'])
+    colored_pred = preds_df.style.applymap(color_negative_red, subset=['Exited'])
     st.dataframe(colored_pred)
 
 
