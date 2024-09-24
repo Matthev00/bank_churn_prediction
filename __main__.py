@@ -1,5 +1,7 @@
 from data.data_prep import create_dataloaders
-import xgboost as xgb
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+from utils import get_args
 import mlflow
 from sklearn.metrics import (
     roc_auc_score,
@@ -11,17 +13,27 @@ from sklearn.metrics import (
 )
 from sklearn.metrics import ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
+import xgboost as xgb
 
 
 def main():
+    args = get_args()
+
     X_train, X_test, y_train, y_test = create_dataloaders(
-        data_path="Churn_Modelling.csv"
+        data_path=args.data_path
     )
 
-    clf = xgb.XGBClassifier(objective="binary:logistic", seed=42)
+    clf = xgb.XGBClassifier(objective="binary:logistic", seed=42,
+                            subsample=0.9,
+                            colsample_bytree=0.5,
+                            max_depth=args.max_depth,
+                            learning_rate=args.learning_rate,
+                            gamma=args.gamma,
+                            reg_lambda=args.reg_lambda,
+                            scale_pos_weight=args.scale_pos_weight)
 
     mlflow.set_experiment("Bank_Churn_Modelling")
-    with mlflow.start_run(run_name="basic_model"):
+    with mlflow.start_run(run_name=args.run_name):
         mlflow.xgboost.autolog()
         clf.fit(
             X_train,
@@ -40,7 +52,7 @@ def main():
         roc_auc = roc_auc_score(y_test, y_pred)
         balanced_accuracy = balanced_accuracy_score(y_test, y_pred)
 
-        mlflow.log_metric("f1", f1)
+        mlflow.log_metric("f1_score", f1)
         mlflow.log_metric("precision", precision)
         mlflow.log_metric("recall", recall)
         mlflow.log_metric("roc_auc", roc_auc)
@@ -51,8 +63,9 @@ def main():
         )
         fig, ax = plt.subplots()
         disp.plot(ax=ax)
-        mlflow.log_figure(fig, "confusion_matrix.png")
+        mlflow.log_figure(fig, "cf_" + args.run_name + ".png")
 
 
 if __name__ == "__main__":
+    warnings.simplefilter(action='ignore', category=FutureWarning)
     main()
