@@ -32,6 +32,27 @@ def create_dataloaders(
     return X_train, X_test, y_train, y_test
 
 
+def get_some_X(data_path: str = "Churn_Modelling.csv") -> pd.DataFrame:
+    data = load_data(data_path=data_path)
+    drop_irrelevant_columns(df=data, columns=["RowNumber", "CustomerId", "Surname"])
+    X = data.drop(columns=["Exited"], axis=1).copy()
+    return X
+
+
+def format_app_input_features(user_input_features):
+    X = pd.DataFrame(user_input_features, index=[0])
+
+    yes_no_columns = ["HasCrCard", "IsActiveMember"]
+    for col in yes_no_columns:
+        if col in X.columns:
+            X[col] = X[col].map({"Yes": 1, "No": 0})
+
+    X = pd.concat([X, get_some_X()], axis=0)
+    X_encoded = pd.get_dummies(X, columns=X.select_dtypes(include="object").columns)
+
+    return X_encoded.iloc[0]
+
+
 def main():
     X_train, X_test, y_train, y_test = create_dataloaders(
         data_path="Churn_Modelling.csv"
