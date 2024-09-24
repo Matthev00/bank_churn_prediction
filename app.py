@@ -1,7 +1,8 @@
 import streamlit as st
-from data.data_prep import format_app_input_features
+from data.data_prep import format_app_input_features, get_example_pd_input
 from utils import load_model
-import mlflow.pyfunc
+import pandas as pd
+import numpy as np
 
 
 def user_input_features():
@@ -33,6 +34,15 @@ def user_input_features():
     return input_dict
 
 
+def xyz(df):
+    exited = [1] * df.shape[0]
+    return pd.DataFrame({"Exited": exited})
+
+
+def color_negative_red(val):
+    color = 'red' if val == 0 else 'green'
+    return f'color: {color}'
+
 
 def main():
     st.write(
@@ -42,16 +52,30 @@ def main():
             This app predicts the **Bank Churn** of a customer!
         """
     )
+    st.write("""
+             Please fill in the details of the customer in the sidebar to predict the churn.
+             This is example input
+             """)
+    st.dataframe(get_example_pd_input())
     st.sidebar.header("User Input Features")
-    # example input
 
-    input_dict = user_input_features()
-    X = format_app_input_features(input_dict)
+    uploaded_file = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"])
+    if uploaded_file is not None:
+        X = pd.read_csv(uploaded_file)
+    else:
+        input_dict = user_input_features()
+        X = format_app_input_features(input_dict)
 
     # clf = load_model()
 
     # prediction = clf.predict(X)
     # print(prediction)
+
+    pred = xyz(X)
+
+    st.subheader("Prediction")
+    colored_pred = pred.style.applymap(color_negative_red, subset=['Exited'])
+    st.dataframe(colored_pred)
 
 
 if __name__ == "__main__":
