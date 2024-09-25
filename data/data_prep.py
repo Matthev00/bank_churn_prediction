@@ -44,6 +44,16 @@ def get_example_pd_input():
     return X.iloc[:5]
 
 
+def format_input_file(uploaded_file) -> pd.DataFrame:
+    X = pd.read_csv(uploaded_file)
+    num_samples = X.shape[0]
+
+    X = pd.concat([X, get_some_X()], axis=0)
+    X_encoded = pd.get_dummies(X, columns=X.select_dtypes(include="object").columns)
+
+    return X_encoded.iloc[:num_samples]
+
+
 def format_app_input_features(user_input_features) -> pd.DataFrame:
     X = pd.DataFrame(user_input_features, index=[0])
 
