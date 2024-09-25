@@ -6,6 +6,7 @@ from data.data_prep import (
 )
 import pandas as pd
 import xgboost
+import warnings
 
 
 def user_input_features():
@@ -41,6 +42,7 @@ def color_negative_red(val):
 
 
 def main():
+    warnings.simplefilter(action="ignore", category=FutureWarning)
     st.write(
         """
             # Bank Churn Prediction App
